@@ -1,0 +1,69 @@
+# SQL Analyst configuration.
+# Copy this file to config.yaml and edit. config.yaml is gitignored.
+
+# ---------- Model ----------
+# Ollama model tag. Examples: qwen3:8b, qwen2.5-coder:7b, codestral:latest, llama3.1:8b
+model: "qwen3:8b"
+
+# Set true to leave thinking mode on. False is faster and usually fine
+# for SQL generation. Plan/clarify nodes can override this internally.
+enable_thinking: false
+
+# Embedding model for schema retrieval + example retrieval.
+embedding_model: "nomic-embed-text"
+
+# Ollama server. Local default.
+ollama_host: "http://localhost:11434"
+
+# Per-node temperatures. SQL very low; explanation/chart slightly higher.
+temperature_sql: 0.0
+temperature_plan: 0.2
+temperature_chart: 0.1
+temperature_explain: 0.3
+temperature_classify: 0.0
+
+# Ollama num_ctx. Bump if your schema chunks are large.
+num_ctx: 8192
+
+# ---------- Paths ----------
+# Database connection. Use a read-only login if you can. Example:
+# "mssql+pyodbc://user:pwd@SERVER/DBNAME?driver=ODBC+Driver+17+for+SQL+Server"
+# Or trusted connection:
+# "mssql+pyodbc://@SERVER/DBNAME?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
+db_connection_string: "mssql+pyodbc://@YOUR_SERVER/YOUR_DB?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
+
+# Shared drive root (read-only).
+shared_drive_root: 'C:\Path\To\Shared\Drive'
+
+# Schema source files on the shared drive (read-only).
+ddl_file: 'C:\Path\To\Shared\Drive\schema\ddl.sql'
+notes_file: 'C:\Path\To\Shared\Drive\schema\notes.md'
+
+# File indexer database (read-only here, written by your separate indexer script).
+file_index_db: 'C:\Path\To\Shared\Drive\file_index.db'
+
+# YOUR folder on the shared drive. All files this tool creates go here.
+output_folder: 'C:\Path\To\Shared\Drive\Users\YOU\sql_analyst_output'
+
+# Local working folder for embeddings cache + examples DB.
+# When you deploy to the team, point examples_db at a shared path.
+data_folder: 'C:\Path\To\Shared\Drive\Users\YOU\sql_analyst_data'
+
+# ---------- Retrieval ----------
+schema_top_k: 6           # how many table chunks to put in the SQL prompt
+examples_top_k: 4         # how many past Q->SQL pairs to retrieve
+
+# ---------- Execution ----------
+query_timeout_sec: 300    # SQL Server query timeout
+max_rows: 100000          # cap on returned rows
+default_top: 100000       # injected if generated SQL has no TOP clause
+sql_retry_limit: 2        # how many times to retry on validation/execution failure
+
+# ---------- UX ----------
+require_plan_approval: true     # show plan, wait for Approve/Edit/Cancel
+require_sql_approval: true      # show SQL, wait for Approve/Edit/Cancel
+auto_open_excel: true           # call os.startfile on the output file
+
+# ---------- Identity (for examples DB) ----------
+# Used to tag examples you contribute when the tool is shared with the team.
+user_id: "you"
